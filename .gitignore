@@ -1,0 +1,46 @@
+# .gitignore
+.env
+.env.local
+.env.*.local
+.env.production
+.env.staging
+.env.test
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv/
+sentiment-app-env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+
+# Kubernetes secrets
+*.secret.yaml
+!*.secret.example.yaml
+
+# Database
+*.db
+*.sqlite
+
+# Docker
+*.pid
