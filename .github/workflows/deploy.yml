@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest
+          pytest -v
         env:
           TESTING: true
 
