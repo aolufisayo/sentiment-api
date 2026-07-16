@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sentiment-api
+  name: sentiment-api
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-api
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: sentiment-api
+    spec:
+      containers:
+      - image: olufisayoa/sentiment-api
+        name: sentiment-api
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8000
+          name: http
+          protocol: TCP
+        resources: {}
+status: {}
