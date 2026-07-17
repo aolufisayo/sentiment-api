@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-dashboards
+  namespace: development
+data:
+  sentiment-dashboard.json: |
+    {
+      "title": "Sentiment API Dashboard",
+      "panels": [
+        {
+          "title": "Request Rate",
+          "targets": [
+            {
+              "expr": "rate(http_requests_total[5m])",
+              "legendFormat": "{{method}} {{endpoint}}"
+            }
+          ]
+        },
+        {
+          "title": "Prediction Latency",
+          "targets": [
+            {
+              "expr": "histogram_quantile(0.95, rate(prediction_duration_seconds_bucket[5m]))",
+              "legendFormat": "p95 latency"
+            }
+          ]
+        }
+      ]
+    }

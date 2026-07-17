@@ -88,9 +88,4 @@ def setup_metrics(app: FastAPI):
     # Update cache hit rate periodically
     from ..services.sentiment_service import SentimentService
     
-    @app.on_event("startup")
-    async def setup_cache_metrics():
-        # This will be called from main.py
-        pass
-    
     return instrumentator

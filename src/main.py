@@ -94,7 +94,30 @@ app.add_middleware(
 )
 
 # Setup metrics
-setup_metrics(app)
+try:
+    logger.info("📊 Setting up Prometheus metrics...")
+    setup_metrics(app)
+    logger.info("✅ Metrics setup completed")
+except Exception as e:
+    logger.warning(f"⚠️ Metrics setup failed: {e}")
+
+@app.get("/metrics")
+async def metrics_endpoint():
+    """Direct Prometheus metrics endpoint"""
+    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@app.get("/debug/routes")
+async def debug_routes():
+    """Debug endpoint to see all registered routes"""
+    routes = []
+    for route in app.routes:
+        routes.append({
+            "path": route.path,
+            "name": route.name,
+            "methods": list(route.methods) if hasattr(route, 'methods') else []
+        })
+    return {"routes": routes}
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["Health"])

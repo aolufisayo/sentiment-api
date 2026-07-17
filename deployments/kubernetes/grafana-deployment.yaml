@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sentiment-api-grafana
+  name: sentiment-api-grafana
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-api-grafana
+  strategy:
+    type: RollingUpdate
+    rollingUpdate: 
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: sentiment-api-grafana
+    spec:
+      containers:
+      - image: grafana/grafana:11.6
+        name: grafana
+        ports:
+        - containerPort: 3000
+          name: grafana-http
+          protocol: TCP
+        resources: {}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 3000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        env:
+        - name: GF_SECURITY_ADMIN_USER
+          value: "admin"
+        - name: GF_SECURITY_ADMIN_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: grafana-secrets
+              key: admin-password
+        - name: GF_SERVER_ROOT_URL
+          value: "http://localhost:3000"
+        - name: GF_INSTALL_PLUGINS
+          value: "grafana-clock-panel"
+
+
+
+
+status: {}
