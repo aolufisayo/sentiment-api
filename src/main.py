@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from src.config import settings
 from src.core.logging import setup_logging
-from src.core.metrics import setup_metrics, CACHE_SIZE, MODEL_LOADED
+from src.core.metrics import setup_metrics, CACHE_SIZE, MODEL_LOADED, REQUEST_COUNT, REQUEST_LATENCY
 from src.services.sentiment_service import SentimentService
 from src.api.routes import predict, history, health
 from src.api.middleware import ErrorHandlingMiddleware
