@@ -1,5 +1,5 @@
-# src/main.py - FIXED VERSION
-from fastapi import FastAPI
+# src/main.py
+from fastapi import FastAPI, Response, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from contextlib import asynccontextmanager
@@ -95,6 +95,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+@app.middleware("http")
+async def metrics_middleware(request: Request, call_next):
+    """Track HTTP request metrics"""
+    start_time = time.time()
+    
+    # Process the request
+    response = await call_next(request)
+    
+     if request.url.path != "/metrics":
+        REQUEST_COUNT.labels(
+            method=request.method,
+            endpoint=request.url.path,
+            status=response.status_code
+        ).inc()
+        
+        REQUEST_LATENCY.labels(
+            method=request.method,
+            endpoint=request.url.path
+        ).observe(time.time() - start_time)
+    
+    return response
+
 # Setup metrics
 try:
     logger.info("📊 Setting up Prometheus metrics...")
@@ -102,15 +124,6 @@ try:
     logger.info("✅ Metrics setup completed")
 except Exception as e:
     logger.warning(f"⚠️ Metrics setup failed: {e}")
-
-@app.get("/metrics")
-async def metrics_endpoint():
-    """Direct Prometheus metrics endpoint"""
-    logger.debug("Metrics endpoint called")
-    return Response(
-        content=generate_latest(REGISTRY),
-        media_type=CONTENT_TYPE_LATEST
-    )
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["Health"])
