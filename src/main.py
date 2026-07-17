@@ -102,8 +102,7 @@ async def metrics_middleware(request: Request, call_next):
     
     # Process the request
     response = await call_next(request)
-    
-     if request.url.path != "/metrics":
+    if request.url.path != "/metrics":
         REQUEST_COUNT.labels(
             method=request.method,
             endpoint=request.url.path,
@@ -114,6 +113,8 @@ async def metrics_middleware(request: Request, call_next):
             method=request.method,
             endpoint=request.url.path
         ).observe(time.time() - start_time)
+    
+     
     
     return response
 
