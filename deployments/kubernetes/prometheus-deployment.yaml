@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: sentiment-api-prometheus
+  name: sentiment-api-prometheus
+  namespace: development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sentiment-api-prometheus
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  template:
+    metadata:
+      labels:
+        app: sentiment-api-prometheus
+    spec:
+      containers:
+      - image: prom/prometheus:v3
+        name: prometheus
+        ports:
+        - containerPort: 9090
+          name: prometheus-http
+          protocol: TCP
+        args: 
+        - '--config.file=/etc/prometheus/prometheus.yml'
+        - '--storage.tsdb.path=/prometheus'
+        resources: {}
+      
+status: {}
