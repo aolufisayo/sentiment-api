@@ -18,6 +18,8 @@ from src.api.routes import predict, history, health
 from src.api.middleware import ErrorHandlingMiddleware
 from src.api.routes.predict import set_sentiment_service
 
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST, REGISTRY, Counter, Histogram, Gauge
+
 # Setup logging
 logger = setup_logging()
 
@@ -104,20 +106,11 @@ except Exception as e:
 @app.get("/metrics")
 async def metrics_endpoint():
     """Direct Prometheus metrics endpoint"""
-    return Response(content=generate_latest(), media_type=CONTENT_TYPE_LATEST)
-
-
-@app.get("/debug/routes")
-async def debug_routes():
-    """Debug endpoint to see all registered routes"""
-    routes = []
-    for route in app.routes:
-        routes.append({
-            "path": route.path,
-            "name": route.name,
-            "methods": list(route.methods) if hasattr(route, 'methods') else []
-        })
-    return {"routes": routes}
+    logger.debug("Metrics endpoint called")
+    return Response(
+        content=generate_latest(REGISTRY),
+        media_type=CONTENT_TYPE_LATEST
+    )
 
 # Include routers
 app.include_router(health.router, prefix="/api", tags=["Health"])
@@ -145,6 +138,7 @@ async def root():
         "name": settings.APP_NAME,
         "version": settings.VERSION,
         "status": "running",
+        "metrics": "/metrics",
         "docs": "/api/docs" if settings.DEBUG else "Not available in production"
     }
 
