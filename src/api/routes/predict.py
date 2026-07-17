@@ -52,37 +52,16 @@ async def predict_single(
         # Update metrics
         PREDICTION_COUNT.labels(label=response.label).inc()
         PREDICTION_LATENCY.observe(time.time() - start_time)
-
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict",
-            status=200
-        ).inc()
-        
-        REQUEST_LATENCY.labels(
-            method="POST",
-            endpoint="/api/predict"
-        ).observe(time.time() - start_time)
         
         return response
         
     except ValueError as e:
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict",
-            status=400
-        ).inc()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid input: {str(e)}"
         )
     except Exception as e:
         logger.error(f"Prediction error: {str(e)}", exc_info=True)
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict",
-            status=500
-        ).inc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Prediction failed: {str(e)}"
@@ -112,36 +91,15 @@ async def predict_batch(
             PREDICTION_COUNT.labels(label=response.label).inc()
         
         PREDICTION_LATENCY.observe(time.time() - start_time)
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict/batch",
-            status=200
-        ).inc()
-        
-        REQUEST_LATENCY.labels(
-            method="POST",
-            endpoint="/api/predict/batch"
-        ).observe(time.time() - start_time)
-
         return responses
         
     except ValueError as e:
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict/batch",
-            status=400
-        ).inc()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid input: {str(e)}"
         )
     except Exception as e:
         logger.error(f"Batch prediction error: {str(e)}", exc_info=True)
-        REQUEST_COUNT.labels(
-            method="POST",
-            endpoint="/api/predict/batch",
-            status=500
-        ).inc()
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Batch prediction failed: {str(e)}"

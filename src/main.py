@@ -13,7 +13,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 
 from src.config import settings
 from src.core.logging import setup_logging
-from src.core.metrics import setup_metrics, CACHE_SIZE, MODEL_LOADED, REQUEST_COUNT, REQUEST_LATENCY
+from src.core.metrics import setup_metrics, CACHE_SIZE, MODEL_LOADED
 from src.services.sentiment_service import SentimentService
 from src.api.routes import predict, history, health
 from src.api.middleware import ErrorHandlingMiddleware
@@ -102,20 +102,7 @@ async def metrics_middleware(request: Request, call_next):
     start_time = time.time()
     
     # Process the request
-    response = await call_next(request)
-    if request.url.path != "/metrics":
-        REQUEST_COUNT.labels(
-            method=request.method,
-            endpoint=request.url.path,
-            status=response.status_code
-        ).inc()
-        
-        REQUEST_LATENCY.labels(
-            method=request.method,
-            endpoint=request.url.path
-        ).observe(time.time() - start_time)
-    
-     
+    response = await call_next(request)     
     
     return response
 
