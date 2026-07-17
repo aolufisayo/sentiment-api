@@ -1,4 +1,5 @@
 # src/core/metrics.py
+import time
 from prometheus_client import Counter, Histogram, Gauge, Info
 from prometheus_fastapi_instrumentator import Instrumentator
 from fastapi import FastAPI

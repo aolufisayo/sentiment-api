@@ -5,6 +5,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from contextlib import asynccontextmanager
 import asyncio
 import sys
+import time
 from pathlib import Path
 
 # Add src to path for imports
