@@ -91,7 +91,6 @@ async def predict_batch(
             PREDICTION_COUNT.labels(label=response.label).inc()
         
         PREDICTION_LATENCY.observe(time.time() - start_time)
-        
         return responses
         
     except ValueError as e:
